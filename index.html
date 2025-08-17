@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wegovy價格換算</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-center mb-2 text-gray-800">Wegovy價格換算</h1>
+        <p class="text-center text-gray-600 mb-6">計算PAP回饋後，每盒1mg的平均價格</p>
+
+        <!-- 1.0mg 方框 -->
+        <div class="mb-6 p-4 rounded-lg" style="background-color: #b8e1dc;">
+            <h2 class="text-lg font-semibold mb-3 text-gray-800">1.0mg</h2>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1">購買盒數</label>
+                <input type="number" id="A1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入盒數">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">每盒1.0mg金額</label>
+                <input type="number" id="A2" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入金額">
+            </div>
+        </div>
+
+        <!-- 1.7mg 方框 -->
+        <div class="mb-6 p-4 rounded-lg" style="background-color: #0192c1;">
+            <h2 class="text-lg font-semibold mb-3 text-white">1.7mg</h2>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-white mb-1">購買盒數</label>
+                <input type="number" id="B1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入盒數">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-white mb-1">每盒1.7mg金額</label>
+                <input type="number" id="B2" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入金額">
+            </div>
+        </div>
+
+        <!-- 2.4mg 方框 -->
+        <div class="mb-6 p-4 rounded-lg" style="background-color: #57656e;">
+            <h2 class="text-lg font-semibold mb-3 text-white">2.4mg</h2>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-white mb-1">購買盒數</label>
+                <input type="number" id="C1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入盒數">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-white mb-1">每盒2.4mg金額</label>
+                <input type="number" id="C2" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入金額">
+            </div>
+        </div>
+
+        <!-- 贈送藥品數量方框 -->
+        <div class="mb-6 p-4 rounded-lg" style="background-color: #57656e;">
+            <h2 class="text-lg font-semibold mb-2 text-white">贈送藥品數量</h2>
+            <p class="text-sm text-white mb-3">贈送會以劑量計算，來平均每1mg價格。總回饋盒數最多為3</p>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-white mb-1">選擇贈送劑量</label>
+                <select id="dosageSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="1">1.0mg</option>
+                    <option value="1.7">1.7mg</option>
+                    <option value="2.4">2.4mg</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-white mb-1">贈送盒數</label>
+                <input type="number" id="E1" min="0" max="3" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" placeholder="自動計算">
+            </div>
+        </div>
+
+        <!-- 計算按鈕 -->
+        <button onclick="calculatePrice()" class="w-full py-3 rounded-lg text-white font-semibold text-lg mb-4" style="background-color: #ee82ee;">
+            計算平均價格
+        </button>
+
+        <!-- 結果顯示區域 -->
+        <div id="result" class="text-center"></div>
+    </div>
+
+    <script>
+        // 監聽輸入變化，自動更新贈送盒數
+        document.addEventListener('input', function(e) {
+            if (e.target.id === 'A1' || e.target.id === 'B1' || e.target.id === 'C1') {
+                updateGiftBoxes();
+            }
+        });
+
+        function updateGiftBoxes() {
+            const A1 = parseInt(document.getElementById('A1').value) || 0;
+            const B1 = parseInt(document.getElementById('B1').value) || 0;
+            const C1 = parseInt(document.getElementById('C1').value) || 0;
+            const total = A1 + B1 + C1;
+            
+            let E1 = 0;
+            if (total < 3) {
+                E1 = 0;
+            } else if (total === 3 || total === 4 || total === 5) {
+                E1 = 1;
+            } else if (total >= 6) {
+                E1 = 3;
+            }
+            
+            document.getElementById('E1').value = E1;
+        }
+
+        function calculatePrice() {
+            const A1 = parseInt(document.getElementById('A1').value) || 0;
+            const A2 = parseFloat(document.getElementById('A2').value) || 0;
+            const B1 = parseInt(document.getElementById('B1').value) || 0;
+            const B2 = parseFloat(document.getElementById('B2').value) || 0;
+            const C1 = parseInt(document.getElementById('C1').value) || 0;
+            const C2 = parseFloat(document.getElementById('C2').value) || 0;
+            const selectedDosage = parseFloat(document.getElementById('dosageSelect').value);
+            const E1 = parseInt(document.getElementById('E1').value) || 0;
+            
+            const totalBoxes = A1 + B1 + C1;
+            const resultDiv = document.getElementById('result');
+            
+            if (totalBoxes < 3) {
+                resultDiv.innerHTML = '<p class="text-red-500 font-semibold">購買總盒數須為3盒以上</p>';
+                return;
+            }
+            
+            // 計算總成本
+            const totalCost = (A1 * A2) + (B1 * B2) + (C1 * C2);
+            
+            // 計算總劑量 (包含購買的和贈送的)
+            const purchasedDosage = (A1 * 1.0) + (B1 * 1.7) + (C1 * 2.4);
+            const giftDosage = selectedDosage * E1;
+            const totalDosage = purchasedDosage + giftDosage;
+            
+            // 計算每1mg平均價格
+            const avgPrice = totalCost / totalDosage;
+            
+            resultDiv.innerHTML = `
+                <div class="p-4 rounded-lg mb-2" style="background-color: #dda0dd;">
+                    <p class="text-2xl font-bold text-gray-800">NT$ ${avgPrice.toFixed(2)}</p>
+                </div>
+                <p class="text-gray-500 text-sm">每盒1mg平均價格</p>
+            `;
+        }
+
+        // 初始化贈送盒數
+        updateGiftBoxes();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9705d2d96237a9a9',t:'MTc1NTM5ODYwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
